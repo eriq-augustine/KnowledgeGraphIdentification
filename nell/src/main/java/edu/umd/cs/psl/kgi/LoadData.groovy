@@ -91,7 +91,7 @@ m.add predicate: "Cat", types: [ArgumentType.UniqueID, ArgumentType.UniqueID]
 m.add predicate: "Rel", types: [ArgumentType.UniqueID, ArgumentType.UniqueID, ArgumentType.UniqueID]
 
 
-/*** Ontology Predicates ***/				
+/*** Ontology Predicates ***/
 m.add predicate: "Sub", types: [ArgumentType.UniqueID, ArgumentType.UniqueID]
 
 m.add predicate: "RSub", types: [ArgumentType.UniqueID, ArgumentType.UniqueID]
@@ -177,13 +177,14 @@ m.add predicate: "PattRel", types: [ArgumentType.UniqueID, ArgumentType.UniqueID
 Partition ontology = new Partition(10);
 
 def ontoMap = [
-		((Predicate)Mut):dataroot+"165.onto-wbpg.db.Mut.txt",
-		((Predicate)Sub):dataroot+"165.onto-wbpg.db.Sub.txt",
-		((Predicate)RSub):dataroot+"165.onto-wbpg.db.RSub.txt",
-    	      	((Predicate)Domain):dataroot+"165.onto-wbpg.db.Domain.txt",
-		((Predicate)Inv):dataroot+"165.onto-wbpg.db.Inv.txt",
-		((Predicate)Range2):dataroot+"165.onto-wbpg.db.Range2.txt",
-		((Predicate)RMut):dataroot+"165.onto-wbpg.db.RMut.txt"];
+   ((Predicate)Mut) : dataroot+"165.onto-wbpg.db.Mut.txt",
+   ((Predicate)Sub) : dataroot+"165.onto-wbpg.db.Sub.txt",
+   ((Predicate)RSub) : dataroot+"165.onto-wbpg.db.RSub.txt",
+   ((Predicate)Domain) : dataroot+"165.onto-wbpg.db.Domain.txt",
+   ((Predicate)Inv) : dataroot+"165.onto-wbpg.db.Inv.txt",
+   ((Predicate)Range2) : dataroot+"165.onto-wbpg.db.Range2.txt",
+   ((Predicate)RMut) : dataroot+"165.onto-wbpg.db.RMut.txt"
+];
 
 KGIUtils.loadPredicateAtoms(data, ontoMap, ontology)
 
@@ -191,8 +192,10 @@ KGIUtils.loadPredicateAtoms(data, ontoMap, ontology)
 /*** Load seed atoms ***/
 Partition seeds = new Partition(20);
 
-def seedMap = [((Predicate)Cat):dataroot+"seed.165.cat.uniq.out",
-	       ((Predicate)Rel):dataroot+"seed.165.rel.uniq.out"];
+def seedMap = [
+   ((Predicate)Cat) : dataroot+"seed.165.cat.uniq.out",
+   ((Predicate)Rel) : dataroot+"seed.165.rel.uniq.out"
+];
 
 KGIUtils.loadPredicateAtomsWithValue(data, seedMap, seeds)
 
@@ -201,7 +204,7 @@ KGIUtils.loadPredicateAtomsWithValue(data, seedMap, seeds)
 /*** Load entity resolution atoms ***/
 Partition entity_resolution = new Partition(30);
 
-def erMap = [((Predicate)SameEntity):dataroot+"NELL.08m.165.cesv.csv.SameEntity.out"]
+def erMap = [((Predicate)SameEntity) : dataroot+"NELL.08m.165.cesv.csv.SameEntity.out"]
 
 KGIUtils.loadPredicateAtomsWithValue(data, erMap, entity_resolution)
 
@@ -209,8 +212,8 @@ KGIUtils.loadPredicateAtomsWithValue(data, erMap, entity_resolution)
 /*** Load training atoms ***/
 Partition training = new Partition(40);
 
-def trainMap = [((Predicate)Cat):dataroot+"label-train-uniq-raw-cat.db.TRAIN",
-		((Predicate)Rel):dataroot+"label-train-uniq-raw-rel.db.TRAIN"];
+def trainMap = [((Predicate)Cat) : dataroot+"label-train-uniq-raw-cat.db.TRAIN",
+      ((Predicate)Rel) : dataroot+"label-train-uniq-raw-rel.db.TRAIN"];
 
 KGIUtils.loadPredicateAtomsWithValue(data, trainMap, training)
 
@@ -218,24 +221,28 @@ KGIUtils.loadPredicateAtomsWithValue(data, trainMap, training)
 Partition candidates = new Partition(50);
 Partition candidates_nosource = new Partition(55);
 
-def predCatMap = [((Predicate)CandCat_CBL):dataroot+"NELL.08m.165.cesv.csv.CandCat_CBL.out",
-    	       	 ((Predicate)CandCat_CMC):dataroot+"NELL.08m.165.cesv.csv.CandCat_CMC.out",
-		 ((Predicate)CandCat_CPL):dataroot+"NELL.08m.165.cesv.csv.CandCat_CPL.out",
-		 ((Predicate)CandCat_General):dataroot+"NELL.08m.165.cesv.csv.CandCat_General.out",
-		 ((Predicate)CandCat_Morph):dataroot+"NELL.08m.165.cesv.csv.CandCat_Morph.out",
-		 ((Predicate)CandCat_SEAL):dataroot+"NELL.08m.165.cesv.csv.CandCat_SEAL.out",
-		 ((Predicate)PattCat):dataroot+"NELL.08m.165.cesv.csv.PattCat.out",
-		 ((Predicate)PromCat_General):dataroot+"NELL.08m.165.esv.csv.PromCat_General.out"]
+def predCatMap = [
+   ((Predicate)CandCat_CBL) : dataroot+"NELL.08m.165.cesv.csv.CandCat_CBL.out",
+   ((Predicate)CandCat_CMC) : dataroot+"NELL.08m.165.cesv.csv.CandCat_CMC.out",
+   ((Predicate)CandCat_CPL) : dataroot+"NELL.08m.165.cesv.csv.CandCat_CPL.out",
+   ((Predicate)CandCat_General) : dataroot+"NELL.08m.165.cesv.csv.CandCat_General.out",
+   ((Predicate)CandCat_Morph) : dataroot+"NELL.08m.165.cesv.csv.CandCat_Morph.out",
+   ((Predicate)CandCat_SEAL) : dataroot+"NELL.08m.165.cesv.csv.CandCat_SEAL.out",
+   ((Predicate)PattCat) : dataroot+"NELL.08m.165.cesv.csv.PattCat.out",
+   ((Predicate)PromCat_General) : dataroot+"NELL.08m.165.esv.csv.PromCat_General.out"
+]
 
-def predRelMap = [((Predicate)CandRel_CBL):dataroot+"NELL.08m.165.cesv.csv.CandRel_CBL.out",
-    	       	 ((Predicate)CandRel_CPL):dataroot+"NELL.08m.165.cesv.csv.CandRel_CPL.out",
-		 ((Predicate)CandRel_General):dataroot+"NELL.08m.165.cesv.csv.CandRel_General.out",
-		 ((Predicate)CandRel_SEAL):dataroot+"NELL.08m.165.cesv.csv.CandRel_SEAL.out",
-		 ((Predicate)PattRel):dataroot+"NELL.08m.165.cesv.csv.PattRel.out",
-		 ((Predicate)PromRel_General):dataroot+"NELL.08m.165.esv.csv.PromRel_General.out"];
+def predRelMap = [
+   ((Predicate)CandRel_CBL) : dataroot+"NELL.08m.165.cesv.csv.CandRel_CBL.out",
+   ((Predicate)CandRel_CPL) : dataroot+"NELL.08m.165.cesv.csv.CandRel_CPL.out",
+   ((Predicate)CandRel_General) : dataroot+"NELL.08m.165.cesv.csv.CandRel_General.out",
+   ((Predicate)CandRel_SEAL) : dataroot+"NELL.08m.165.cesv.csv.CandRel_SEAL.out",
+   ((Predicate)PattRel) : dataroot+"NELL.08m.165.cesv.csv.PattRel.out",
+   ((Predicate)PromRel_General) : dataroot+"NELL.08m.165.esv.csv.PromRel_General.out"
+];
 
-def predNoSourceMap = [((Predicate)CandCat):dataroot+"NELL.08m.165.cesv.csv.CandCat.out",
-    		      ((Predicate)CandRel):dataroot+"NELL.08m.165.cesv.csv.CandRel.out"];
+def predNoSourceMap = [((Predicate)CandCat) : dataroot+"NELL.08m.165.cesv.csv.CandCat.out",
+                ((Predicate)CandRel) : dataroot+"NELL.08m.165.cesv.csv.CandRel.out"];
 
 KGIUtils.loadPredicateAtomsWithValue(data, predCatMap, candidates)
 KGIUtils.loadPredicateAtomsWithValue(data, predRelMap, candidates)
@@ -244,20 +251,20 @@ KGIUtils.loadPredicateAtomsWithValue(data, predNoSourceMap, candidates_nosource)
 
 
 /*** Scope inference targets ***/
-Partition trTargets = new Partition(60);
-Partition teTargets = new Partition(65);
+Partition trainingTargetPartition = new Partition(60);
+Partition testTargetPartition = new Partition(65);
 
-def valTrMap = [((Predicate)ValCat):dataroot+"trainTargets.ValCat.out",
-            ((Predicate)ValRel):dataroot+"trainTargets.ValRel.out"];
+def valTrMap = [((Predicate)ValCat) : dataroot+"trainTargets.ValCat.out",
+            ((Predicate)ValRel) : dataroot+"trainTargets.ValRel.out"];
 
-def valTeMap = [((Predicate)ValCat):dataroot+"testTargets.shangpu.ValCat.out",
-                ((Predicate)ValRel):dataroot+"testTargets.shangpu.ValRel.out"]
+def valTeMap = [((Predicate)ValCat) : dataroot+"testTargets.shangpu.ValCat.out",
+                ((Predicate)ValRel) : dataroot+"testTargets.shangpu.ValRel.out"]
 
-def valTeMap2 = [((Predicate)ValCat):dataroot+"testTargets.additional.ValCat.out",
-		((Predicate)ValRel):dataroot+"testTargets.additional.ValRel.out"];
+def valTeMap2 = [((Predicate)ValCat) : dataroot+"testTargets.additional.ValCat.out",
+      ((Predicate)ValRel) : dataroot+"testTargets.additional.ValRel.out"];
 
-KGIUtils.loadPredicateAtomsWithValue(data, valTrMap, trTargets);
-KGIUtils.loadPredicateAtomsWithValue(data, valTeMap, teTargets);
+KGIUtils.loadPredicateAtomsWithValue(data, valTrMap, trainingTargetPartition);
+KGIUtils.loadPredicateAtomsWithValue(data, valTeMap, testTargetPartition);
 
 
 /*** Load inference targets ***/
@@ -265,17 +272,17 @@ Partition writeInfTr = new Partition(150);
 Partition writeInfWL = new Partition(160);
 Partition writeInfTe = new Partition(170);
 
-def trTargetMap = [((Predicate)Cat):dataroot+"trainTargets.Cat.out",
-		   ((Predicate)Rel):dataroot+"trainTargets.Rel.out"];
+def trTargetMap = [((Predicate)Cat) : dataroot+"trainTargets.Cat.out",
+         ((Predicate)Rel) : dataroot+"trainTargets.Rel.out"];
 
-def wlTargetMap = [((Predicate)Cat):dataroot+"wlTargets.Cat.out",
-		   ((Predicate)Rel):dataroot+"wlTargets.Rel.out"];
+def wlTargetMap = [((Predicate)Cat) : dataroot+"wlTargets.Cat.out",
+         ((Predicate)Rel) : dataroot+"wlTargets.Rel.out"];
 
-def teTargetMap = [((Predicate)Cat):dataroot+"testTargets.shangpu.Cat.out",
-		   ((Predicate)Rel):dataroot+"testTargets.shangpu.Rel.out"];
+def teTargetMap = [((Predicate)Cat) : dataroot+"testTargets.shangpu.Cat.out",
+         ((Predicate)Rel) : dataroot+"testTargets.shangpu.Rel.out"];
 
-def teTargetMap2 = [((Predicate)Cat):dataroot+"testTargets.additional.Cat.out",
-		   ((Predicate)Rel):dataroot+"testTargets.additional.Rel.out"];
+def teTargetMap2 = [((Predicate)Cat) : dataroot+"testTargets.additional.Cat.out",
+         ((Predicate)Rel) : dataroot+"testTargets.additional.Rel.out"];
 
 KGIUtils.loadPredicateAtomsWithValue(data, trTargetMap, writeInfTr);
 KGIUtils.loadPredicateAtomsWithValue(data, wlTargetMap, writeInfWL);

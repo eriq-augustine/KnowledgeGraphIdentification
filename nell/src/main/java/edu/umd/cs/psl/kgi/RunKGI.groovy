@@ -68,272 +68,272 @@ import groovy.time.*;
 Logger log = LoggerFactory.getLogger(this.class);
 
 def print_results(datastore, readPartition){
-    Partition dummy = new Partition(99);
-    Database resultsDB = datastore.getDatabase(dummy, readPartition);
-    
-    AtomPrintStream printer = new DefaultAtomPrintStream();
-    Set atomSet = Queries.getAllAtoms(resultsDB,Rel);
-    for (Atom a : atomSet) {
-	printer.printAtom(a);
-    }
-    atomSet = Queries.getAllAtoms(resultsDB,Cat);
-    for (Atom a : atomSet) {
-	printer.printAtom(a);
-    }
-    resultsDB.close();
+   Partition dummy = new Partition(99);
+   Database resultsDB = datastore.getDatabase(dummy, readPartition);
+
+   AtomPrintStream printer = new DefaultAtomPrintStream();
+   Set atomSet = Queries.getAllAtoms(resultsDB,Rel);
+   for (Atom a : atomSet) {
+   printer.printAtom(a);
+   }
+   atomSet = Queries.getAllAtoms(resultsDB,Cat);
+   for (Atom a : atomSet) {
+   printer.printAtom(a);
+   }
+   resultsDB.close();
 }
 
 
 def createModel(data, settings){
-    PSLModel m = new PSLModel(this, data);
+   PSLModel m = new PSLModel(this, data);
 
-    weightMap = settings["weight_map"];
+   weightMap = settings["weight_map"];
 
-    ontoConstraints = false;
-    sqPotentials = true;
-    sqOntoPotentials = true;//false;
-
-
-    ///////////////////////////// rules ////////////////////////////////////
-    System.out.println "[info] \t\tREADING RULES...";
-
-    m.add rule:  ( ValCat(B,C) &  SameEntity(A,B) & Cat(A,C) )  >> Cat(B,C) ,
-	squared: sqPotentials,
-	weight: weightMap["ERCat"];
-
-    m.add rule: ( ValRel(B,Z,R) &  SameEntity(A,B) & Rel(A,Z,R) )  >> Rel(B,Z,R) ,
-	squared: sqPotentials,
-	weight: weightMap["ERRelSubj"];
-
-    m.add rule: ( ValRel(Z,B,R) &  SameEntity(A,B) & Rel(Z,A,R) ) >> Rel(Z,B,R) ,
-	squared: sqPotentials,
-	weight: weightMap["ERRelObj"];
+   ontoConstraints = false;
+   sqPotentials = true;
+   sqOntoPotentials = true;//false;
 
 
-    m.add rule: ( ValCat(A,D) &  Sub(C,D) & Cat(A,C) ) >> Cat(A,D) ,        
-	squared: sqOntoPotentials,
-	weight: weightMap["Sub"];
+   ///////////////////////////// rules ////////////////////////////////////
+   System.out.println "[info] \t\tREADING RULES...";
 
-    m.add rule: ( ValRel(A,B,S) &  RSub(R,S) & Rel(A,B,R) ) >> Rel(A,B,S), 
-	squared: sqOntoPotentials,
-	weight: weightMap["RSub"];
+   m.add rule:  ( ValCat(B,C) &  SameEntity(A,B) & Cat(A,C) )  >> Cat(B,C) ,
+   squared: sqPotentials,
+   weight: weightMap["ERCat"];
 
-    m.add rule: ( ValCat(A,D) &  Mut(C,D) & Cat(A,C) ) >> ~Cat(A,D),
-	squared: sqOntoPotentials,
-	weight: weightMap["Mut"];
+   m.add rule: ( ValRel(B,Z,R) &  SameEntity(A,B) & Rel(A,Z,R) )  >> Rel(B,Z,R) ,
+   squared: sqPotentials,
+   weight: weightMap["ERRelSubj"];
 
-    m.add rule: ( ValRel(A,B,S) &  RMut(R,S) & Rel(A,B,R) ) >> ~Rel(A,B,S),
-	squared: sqOntoPotentials,
-	weight: weightMap["RMut"];
-
-    m.add rule: ( ValRel(B,A,S) &  Inv(R,S) & Rel(A,B,R) ) >> Rel(B,A,S),
-	squared: sqOntoPotentials,
-	weight: weightMap["Inv"];
-
-    m.add rule: ( ValCat(A,C) &  Domain(R,C) & Rel(A,B,R) ) >> Cat(A,C),
-	squared: sqOntoPotentials,
-	weight: weightMap["Domain"];
-
-    m.add rule: ( ValCat(B,C) &   Range2(R,C) & Rel(A,B,R) ) >> Cat(B,C),
-	squared: sqOntoPotentials,
-	weight: weightMap["Range"];
-
-    m.add rule: ( ValCat(A,C) & PSeedCat(A,C) ) >> Cat(A,C),
-	squared: sqPotentials,
-	weight : weightMap["SeedCat"];
-    m.add rule: ( ValRel(A,B,R) & PSeedRel(A,B,R) ) >> Rel(A,B,R),
-	squared: sqPotentials,
-	weight : weightMap["SeedRel"];
-    m.add rule: ( ValCat(A,C) & NSeedCat(A,C) ) >> ~Cat(A,C),
-	squared: sqPotentials,
-	weight : weightMap["SeedCat"];
-    m.add rule: ( ValRel(A,B,R) & NSeedRel(A,B,R) ) >> ~Rel(A,B,R),
-	squared: sqPotentials,
-	weight : weightMap["SeedRel"];
+   m.add rule: ( ValRel(Z,B,R) &  SameEntity(A,B) & Rel(Z,A,R) ) >> Rel(Z,B,R) ,
+   squared: sqPotentials,
+   weight: weightMap["ERRelObj"];
 
 
+   m.add rule: ( ValCat(A,D) &  Sub(C,D) & Cat(A,C) ) >> Cat(A,D) ,
+   squared: sqOntoPotentials,
+   weight: weightMap["Sub"];
 
-    m.add rule: ( ValCat(A,C) & CandCat(A,C) ) >> Cat(A,C),
-	squared: sqPotentials,
-	weight : weightMap["CandCat"];
-    m.add rule: ( ValRel(A,B,R) & CandRel(A,B,R) ) >> Rel(A,B,R),
-	squared: sqPotentials,
-	weight : weightMap["CandRel"];
+   m.add rule: ( ValRel(A,B,S) &  RSub(R,S) & Rel(A,B,R) ) >> Rel(A,B,S),
+   squared: sqOntoPotentials,
+   weight: weightMap["RSub"];
 
-    m.add rule: ( ValCat(A,C) & CandCat_General(A,C) ) >> Cat(A,C),
-	squared: sqPotentials,
-	weight : weightMap["CandCat_General"];
-    m.add rule: ( ValRel(A,B,R) & CandRel_General(A,B,R) ) >> Rel(A,B,R),
-	squared: sqPotentials,
-	weight : weightMap["CandRel_General"];
-    
-    m.add rule: (ValCat(A,C) & CandCat_CBL(A,C) ) >> Cat(A,C),
-	squared: sqPotentials,
-	weight : weightMap["CandCat_CBL"];
-    m.add rule: (ValRel(A,B,R) & CandRel_CBL(A,B,R) ) >> Rel(A,B,R),
-	squared: sqPotentials,
-	weight : weightMap["CandRel_CBL"];
+   m.add rule: ( ValCat(A,D) &  Mut(C,D) & Cat(A,C) ) >> ~Cat(A,D),
+   squared: sqOntoPotentials,
+   weight: weightMap["Mut"];
 
-    m.add rule: (ValCat(A,C) & CandCat_CMC(A,C) ) >> Cat(A,C),
-	squared: sqPotentials,
-	weight : weightMap["CandCat_CMC"];
-    m.add rule: (ValRel(A,B,R) & CandRel_CMC(A,B,R) ) >> Rel(A,B,R),
-	squared: sqPotentials,
-	weight : weightMap["CandRel_CMC"];
+   m.add rule: ( ValRel(A,B,S) &  RMut(R,S) & Rel(A,B,R) ) >> ~Rel(A,B,S),
+   squared: sqOntoPotentials,
+   weight: weightMap["RMut"];
 
-    m.add rule: (ValCat(A,C) & CandCat_CPL(A,C) ) >> Cat(A,C),
-	squared: sqPotentials,
-	weight : weightMap["CandCat_CPL"];
-    m.add rule: (ValRel(A,B,R) & CandRel_CPL(A,B,R) ) >> Rel(A,B,R),
-	squared: sqPotentials,
-	weight : weightMap["CandRel_CPL"];
+   m.add rule: ( ValRel(B,A,S) &  Inv(R,S) & Rel(A,B,R) ) >> Rel(B,A,S),
+   squared: sqOntoPotentials,
+   weight: weightMap["Inv"];
 
-    m.add rule: (ValCat(A,C) & CandCat_Morph(A,C) ) >> Cat(A,C),
-	squared: sqPotentials,
-	weight : weightMap["CandCat_Morph"];
-    m.add rule: (ValRel(A,B,R) & CandRel_Morph(A,B,R) ) >> Rel(A,B,R),
-	squared: sqPotentials,
-	weight : weightMap["CandRel_Morph"];
+   m.add rule: ( ValCat(A,C) &  Domain(R,C) & Rel(A,B,R) ) >> Cat(A,C),
+   squared: sqOntoPotentials,
+   weight: weightMap["Domain"];
 
-    m.add rule: (ValCat(A,C) & CandCat_SEAL(A,C) ) >> Cat(A,C),
-	squared: sqPotentials,
-	weight : weightMap["CandCat_SEAL"];
-    m.add rule: (ValRel(A,B,R) & CandRel_SEAL(A,B,R) ) >> Rel(A,B,R),
-	squared: sqPotentials,
-	weight : weightMap["CandRel_SEAL"];
+   m.add rule: ( ValCat(B,C) &   Range2(R,C) & Rel(A,B,R) ) >> Cat(B,C),
+   squared: sqOntoPotentials,
+   weight: weightMap["Range"];
 
-    m.add rule: (ValCat(A,C) & PattCat(A,C) ) >> Cat(A,C),
-	squared: sqPotentials,
-	weight : weightMap["PattCat"];
-    m.add rule: (ValRel(A,B,R) & PattRel(A,B,R) ) >> Rel(A,B,R),
-	squared: sqPotentials,
-	weight : weightMap["PattRel"];
+   m.add rule: ( ValCat(A,C) & PSeedCat(A,C) ) >> Cat(A,C),
+   squared: sqPotentials,
+   weight : weightMap["SeedCat"];
+   m.add rule: ( ValRel(A,B,R) & PSeedRel(A,B,R) ) >> Rel(A,B,R),
+   squared: sqPotentials,
+   weight : weightMap["SeedRel"];
+   m.add rule: ( ValCat(A,C) & NSeedCat(A,C) ) >> ~Cat(A,C),
+   squared: sqPotentials,
+   weight : weightMap["SeedCat"];
+   m.add rule: ( ValRel(A,B,R) & NSeedRel(A,B,R) ) >> ~Rel(A,B,R),
+   squared: sqPotentials,
+   weight : weightMap["SeedRel"];
 
-    
-    m.add rule: (ValCat(A,C) & PromCat(A,C) ) >> Cat(A,C),
-	squared: sqPotentials,
-	weight : weightMap["PromCat"];
-    m.add rule: (ValRel(A,B,R) & PromRel(A,B,R) ) >> Rel(A,B,R),
-	squared: sqPotentials,
-	weight : weightMap["PromRel"];
 
-    m.add rule: (ValCat(A,C) & PromCat_General(A,C) ) >> Cat(A,C),
-	squared: sqPotentials,
-	weight : weightMap["PromCat_General"];
-    m.add rule: (ValRel(A,B,R) & PromRel_General(A,B,R) ) >> Rel(A,B,R),
-	squared: sqPotentials,
-	weight : weightMap["PromRel_General"];
-    
 
-    m.add rule: (ValCat(A,C) ) >> ~Cat(A,C),
-	squared: sqPotentials,
-	weight : weightMap["negPriorCat"];
-    m.add rule: (ValRel(A,B,R)  ) >> ~Rel(A,B,R),
-	squared: sqPotentials,
-	weight : weightMap["negPriorRel"];
-    
+   m.add rule: ( ValCat(A,C) & CandCat(A,C) ) >> Cat(A,C),
+   squared: sqPotentials,
+   weight : weightMap["CandCat"];
+   m.add rule: ( ValRel(A,B,R) & CandRel(A,B,R) ) >> Rel(A,B,R),
+   squared: sqPotentials,
+   weight : weightMap["CandRel"];
 
-    m.add rule: (ValCat(A,C) ) >> Cat(A,C),
-	squared: sqPotentials,
-	weight : weightMap["posPriorCat"];
-    m.add rule: (ValRel(A,B,R)  ) >> Rel(A,B,R),
-	squared: sqPotentials,
-	weight : weightMap["posPriorRel"];
+   m.add rule: ( ValCat(A,C) & CandCat_General(A,C) ) >> Cat(A,C),
+   squared: sqPotentials,
+   weight : weightMap["CandCat_General"];
+   m.add rule: ( ValRel(A,B,R) & CandRel_General(A,B,R) ) >> Rel(A,B,R),
+   squared: sqPotentials,
+   weight : weightMap["CandRel_General"];
 
-    System.out.println(m);
-    return m;
+   m.add rule: (ValCat(A,C) & CandCat_CBL(A,C) ) >> Cat(A,C),
+   squared: sqPotentials,
+   weight : weightMap["CandCat_CBL"];
+   m.add rule: (ValRel(A,B,R) & CandRel_CBL(A,B,R) ) >> Rel(A,B,R),
+   squared: sqPotentials,
+   weight : weightMap["CandRel_CBL"];
+
+   m.add rule: (ValCat(A,C) & CandCat_CMC(A,C) ) >> Cat(A,C),
+   squared: sqPotentials,
+   weight : weightMap["CandCat_CMC"];
+   m.add rule: (ValRel(A,B,R) & CandRel_CMC(A,B,R) ) >> Rel(A,B,R),
+   squared: sqPotentials,
+   weight : weightMap["CandRel_CMC"];
+
+   m.add rule: (ValCat(A,C) & CandCat_CPL(A,C) ) >> Cat(A,C),
+   squared: sqPotentials,
+   weight : weightMap["CandCat_CPL"];
+   m.add rule: (ValRel(A,B,R) & CandRel_CPL(A,B,R) ) >> Rel(A,B,R),
+   squared: sqPotentials,
+   weight : weightMap["CandRel_CPL"];
+
+   m.add rule: (ValCat(A,C) & CandCat_Morph(A,C) ) >> Cat(A,C),
+   squared: sqPotentials,
+   weight : weightMap["CandCat_Morph"];
+   m.add rule: (ValRel(A,B,R) & CandRel_Morph(A,B,R) ) >> Rel(A,B,R),
+   squared: sqPotentials,
+   weight : weightMap["CandRel_Morph"];
+
+   m.add rule: (ValCat(A,C) & CandCat_SEAL(A,C) ) >> Cat(A,C),
+   squared: sqPotentials,
+   weight : weightMap["CandCat_SEAL"];
+   m.add rule: (ValRel(A,B,R) & CandRel_SEAL(A,B,R) ) >> Rel(A,B,R),
+   squared: sqPotentials,
+   weight : weightMap["CandRel_SEAL"];
+
+   m.add rule: (ValCat(A,C) & PattCat(A,C) ) >> Cat(A,C),
+   squared: sqPotentials,
+   weight : weightMap["PattCat"];
+   m.add rule: (ValRel(A,B,R) & PattRel(A,B,R) ) >> Rel(A,B,R),
+   squared: sqPotentials,
+   weight : weightMap["PattRel"];
+
+
+   m.add rule: (ValCat(A,C) & PromCat(A,C) ) >> Cat(A,C),
+   squared: sqPotentials,
+   weight : weightMap["PromCat"];
+   m.add rule: (ValRel(A,B,R) & PromRel(A,B,R) ) >> Rel(A,B,R),
+   squared: sqPotentials,
+   weight : weightMap["PromRel"];
+
+   m.add rule: (ValCat(A,C) & PromCat_General(A,C) ) >> Cat(A,C),
+   squared: sqPotentials,
+   weight : weightMap["PromCat_General"];
+   m.add rule: (ValRel(A,B,R) & PromRel_General(A,B,R) ) >> Rel(A,B,R),
+   squared: sqPotentials,
+   weight : weightMap["PromRel_General"];
+
+
+   m.add rule: (ValCat(A,C) ) >> ~Cat(A,C),
+   squared: sqPotentials,
+   weight : weightMap["negPriorCat"];
+   m.add rule: (ValRel(A,B,R)  ) >> ~Rel(A,B,R),
+   squared: sqPotentials,
+   weight : weightMap["negPriorRel"];
+
+
+   m.add rule: (ValCat(A,C) ) >> Cat(A,C),
+   squared: sqPotentials,
+   weight : weightMap["posPriorCat"];
+   m.add rule: (ValRel(A,B,R)  ) >> Rel(A,B,R),
+   squared: sqPotentials,
+   weight : weightMap["posPriorRel"];
+
+   System.out.println(m);
+   return m;
 }
 
 def runInference(m, data, settings){
 
-    Partition dummy = new Partition(99);
+   Partition dummy = new Partition(99);
 
-    Partition ontology = settings["use_ontology"] ? new Partition(10) : dummy;
-    Partition seeds = new Partition(20);
-    Partition entity_resolution = settings["use_entity_resolution"] ? new Partition(30) : dummy;
-    Partition training = new Partition(40);
-    Partition candidates = settings["use_sources"] ? new Partition(50) : new Partition(55);
-    Partition trTargets = new Partition(60);
-    Partition teTargets = new Partition(65);
-
-
-    Partition writeInfTr = new Partition(150);
-    Partition writeInfWL = new Partition(160);
-    Partition writeInfTe = new Partition(170);
-    Partition writeInfObs = new Partition(180);
+   Partition ontology = settings["use_ontology"] ? new Partition(10) : dummy;
+   Partition seeds = new Partition(20);
+   Partition entity_resolution = settings["use_entity_resolution"] ? new Partition(30) : dummy;
+   Partition training = new Partition(40);
+   Partition candidates = settings["use_sources"] ? new Partition(50) : new Partition(55);
+   Partition trainingTargetPartition = new Partition(60);
+   Partition testTargetPartition = new Partition(65);
 
 
-
-    /*** Run inference conditioning on training data ***/
-    System.out.println("STATUS: Starting Inference with Training Targets");
-    Date trainingInference = new Date();
-
-    ConfigManager cm = ConfigManager.getManager();
-    ConfigBundle inferenceBundle = cm.getBundle("inference");
-    inferenceBundle.addProperty("admmreasoner.maxiterations",30000);
-
-    HashSet closedPredsAll = new HashSet<StandardPredicate>([Name,Sub,RSub,Mut,RMut,Inv,Domain,Range2,SameEntity,CandCat,CandRel,CandCat_General,CandRel_General,CandCat_CBL,CandCat_CMC,CandCat_CPL,CandCat_Morph,CandCat_SEAL,CandRel_CBL,CandRel_CPL,CandRel_SEAL,PromCat_General,PromRel_General,SeedCat,SeedRel,TrCat,TrRel,ValCat,ValRel]);
-
-    Database inferenceDB = data.getDatabase(writeInfTr, closedPredsAll, ontology, seeds, entity_resolution, training, candidates, trTargets);
-    mpe = new MPEInference(m, inferenceDB, inferenceBundle);
-    result = mpe.mpeInference();
-    inferenceDB.close();
-
-    System.out.println("STATUS: Inference For Training Complete");
-
-    /*** Perform weight learning to learn weights that approximate inference results ***/
-    System.out.println("STATUS: Starting weight learning");
-    Date weightLearning = new Date();
+   Partition writeInfTr = new Partition(150);
+   Partition writeInfWL = new Partition(160);
+   Partition writeInfTe = new Partition(170);
+   Partition writeInfObs = new Partition(180);
 
 
-    HashSet wlClosedPreds = new HashSet<StandardPredicate>([Rel,Cat]);
 
-    ConfigBundle wlBundle = cm.getBundle("wl");
-    wlBundle.addProperty("admmreasoner.maxiterations",10000);
-    wlBundle.addProperty("mpeinference.maxrounds",25);
+   /*** Run inference conditioning on training data ***/
+   System.out.println("STATUS: Starting Inference with Training Targets");
+   Date trainingInference = new Date();
 
-    wlBundle.addProperty("votedperceptron.stepsize",1);
-    wlBundle.addProperty("votedperceptron.numsteps",300);
+   ConfigManager cm = ConfigManager.getManager();
+   ConfigBundle inferenceBundle = cm.getBundle("inference");
+   inferenceBundle.addProperty("admmreasoner.maxiterations",30000);
 
+   HashSet closedPredsAll = new HashSet<StandardPredicate>([Name,Sub,RSub,Mut,RMut,Inv,Domain,Range2,SameEntity,CandCat,CandRel,CandCat_General,CandRel_General,CandCat_CBL,CandCat_CMC,CandCat_CPL,CandCat_Morph,CandCat_SEAL,CandRel_CBL,CandRel_CPL,CandRel_SEAL,PromCat_General,PromRel_General,SeedCat,SeedRel,TrCat,TrRel,ValCat,ValRel]);
 
-    Database wlRVDB = data.getDatabase(writeInfWL, ontology, seeds, entity_resolution, candidates, trTargets);
-    Database wlObsDB = data.getDatabase(writeInfObs, wlClosedPreds, ontology, seeds, entity_resolution, training, writeInfTr, candidates, trTargets);
+   Database inferenceDB = data.getDatabase(writeInfTr, closedPredsAll, ontology, seeds, entity_resolution, training, candidates, trainingTargetPartition);
+   mpe = new MPEInference(m, inferenceDB, inferenceBundle);
+   result = mpe.mpeInference();
+   inferenceDB.close();
 
-    VotedPerceptron vp = new MaxLikelihoodMPE(m, wlRVDB, wlObsDB, wlBundle);
-    vp.learn();
-    
-    wlRVDB.close();
-    wlObsDB.close();
-    
-    System.out.println("STATUS: Weight Learning complete");
-    System.out.println("Learned Model:");
-    System.out.println(m);
+   System.out.println("STATUS: Inference For Training Complete");
 
-
-    System.out.println("STATUS: Starting Inference with Testing Targets and Learned Model");
-    Date testingInference = new Date();
-
-    Database inferenceTesting = data.getDatabase(writeInfTe, closedPredsAll, ontology, seeds, entity_resolution, training, candidates, teTargets);
-
-    mpe = new MPEInference(m, inferenceTesting, inferenceBundle);
-    result = mpe.mpeInference();
-    inferenceTesting.close();
-
-    System.out.println("STATUS: Inference with learned weights complete");
-    Date finished = new Date();
+   /*** Perform weight learning to learn weights that approximate inference results ***/
+   System.out.println("STATUS: Starting weight learning");
+   Date weightLearning = new Date();
 
 
-    print_results(data, writeInfTe);
-    print_results(data, seeds);
+   HashSet wlClosedPreds = new HashSet<StandardPredicate>([Rel,Cat]);
 
-    TimeDuration td = TimeCategory.minus( weightLearning, trainingInference );
-    System.out.println "Inference on training set took "+td;
-    td = TimeCategory.minus(testingInference, weightLearning);
-    System.out.println "Weight learning took "+td;
-    td = TimeCategory.minus(testingInference, trainingInference);
-    System.out.println "Total training time "+td;
-    td = TimeCategory.minus(finished, testingInference);
-    System.out.println "Total testing time "+td;
+   ConfigBundle wlBundle = cm.getBundle("wl");
+   wlBundle.addProperty("admmreasoner.maxiterations",10000);
+   wlBundle.addProperty("mpeinference.maxrounds",25);
+
+   wlBundle.addProperty("votedperceptron.stepsize",1);
+   wlBundle.addProperty("votedperceptron.numsteps",300);
+
+
+   Database wlRVDB = data.getDatabase(writeInfWL, ontology, seeds, entity_resolution, candidates, trainingTargetPartition);
+   Database wlObsDB = data.getDatabase(writeInfObs, wlClosedPreds, ontology, seeds, entity_resolution, training, writeInfTr, candidates, trainingTargetPartition);
+
+   VotedPerceptron vp = new MaxLikelihoodMPE(m, wlRVDB, wlObsDB, wlBundle);
+   vp.learn();
+
+   wlRVDB.close();
+   wlObsDB.close();
+
+   System.out.println("STATUS: Weight Learning complete");
+   System.out.println("Learned Model:");
+   System.out.println(m);
+
+
+   System.out.println("STATUS: Starting Inference with Testing Targets and Learned Model");
+   Date testingInference = new Date();
+
+   Database inferenceTesting = data.getDatabase(writeInfTe, closedPredsAll, ontology, seeds, entity_resolution, training, candidates, testTargetPartition);
+
+   mpe = new MPEInference(m, inferenceTesting, inferenceBundle);
+   result = mpe.mpeInference();
+   inferenceTesting.close();
+
+   System.out.println("STATUS: Inference with learned weights complete");
+   Date finished = new Date();
+
+
+   print_results(data, writeInfTe);
+   print_results(data, seeds);
+
+   TimeDuration td = TimeCategory.minus( weightLearning, trainingInference );
+   System.out.println "Inference on training set took "+td;
+   td = TimeCategory.minus(testingInference, weightLearning);
+   System.out.println "Weight learning took "+td;
+   td = TimeCategory.minus(testingInference, trainingInference);
+   System.out.println "Total training time "+td;
+   td = TimeCategory.minus(finished, testingInference);
+   System.out.println "Total testing time "+td;
 }
 
 def kgiutils = new KGIUtils();
