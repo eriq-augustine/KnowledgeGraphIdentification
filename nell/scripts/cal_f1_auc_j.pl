@@ -27,13 +27,13 @@ sub loadTrueCats {
     open(F,$fn);
     my $ctr = 0;
     while(<F>){
-	chomp;
-	my ($entity,$category,$label) = split("\t",$_,3);
-	my $key = "$entity,$category,0";
-	my $trVal = $label;
-	$ctr++;
-	$factHash->{$key}=$trVal;
-	$catHash->{$key}=$trVal;
+    chomp;
+    my ($entity,$category,$label) = split("\t",$_,3);
+    my $key = "$entity,$category,0";
+    my $trVal = $label;
+    $ctr++;
+    $factHash->{$key}=$trVal;
+    $catHash->{$key}=$trVal;
     }
     print "Loaded $ctr lines from $fn\n";
     close(F);
@@ -47,13 +47,13 @@ sub loadTrueRels {
     open(F,$fn);
     my $ctr=0;
     while(<F>){
-	chomp;
-	my ($entity,$value,$relation,$label) = split("\t",$_,4);
-	my $key = "$entity,$value,$relation";
-	my $trVal = $label;
-	$ctr++;
-	$factHash->{$key}=$trVal;
-	$relHash->{$key}=$trVal;
+    chomp;
+    my ($entity,$value,$relation,$label) = split("\t",$_,4);
+    my $key = "$entity,$value,$relation";
+    my $trVal = $label;
+    $ctr++;
+    $factHash->{$key}=$trVal;
+    $relHash->{$key}=$trVal;
     }
     print "Loaded $ctr lines from $fn\n";
     close(F);
@@ -64,16 +64,16 @@ sub loadResultsFile {
    my $fn = shift;
     open(F,$fn);
     while(<F>){
-	chomp;
-	if(/^Rel\((\d+),\s*(\d+),\s*(\d+)\)\s+\w+=\[(\S+)\]/i){
-	    my $key = "$1,$2,$3";
-	    $relHash->{$key} = $4;
-	    $factHash->{$key} = $4;
-	} elsif(/^Cat\((\d+),\s*(\d+)\)\s+\w+=\[(\S+)\]/i){
-	    my $key = "$1,$2,0";
-	    $catHash->{$key} = $3;
-	    $factHash->{$key} = $3;
-	}
+    chomp;
+    if(/^Rel\((\d+),\s*(\d+),\s*(\d+)\)\s+\w+=\[(\S+)\]/i){
+        my $key = "$1,$2,$3";
+        $relHash->{$key} = $4;
+        $factHash->{$key} = $4;
+    } elsif(/^Cat\((\d+),\s*(\d+)\)\s+\w+=\[(\S+)\]/i){
+        my $key = "$1,$2,0";
+        $catHash->{$key} = $3;
+        $factHash->{$key} = $3;
+    }
     }
 }
 
@@ -94,21 +94,26 @@ sub calcF1 {
     my $prevRecall = 0;
 
     foreach my $fact (keys %$inferHash){
-	next unless $inferHash->{$fact} >= $thresh;
-	if($trueHash->{$fact}>0)  {
-	    $truePos++;
-	} elsif (defined($trueHash->{$fact})){
-	    $falsePos++;
-	}
+    next unless $inferHash->{$fact} >= $thresh;
+    if($trueHash->{$fact}>0)  {
+        $truePos++;
+    } elsif (defined($trueHash->{$fact})){
+        $falsePos++;
+    }
     }
     my $total = $truePos+$falsePos;
     my $precision, $recall;
     if($total > 0){
-	$recall = $truePos/$allTrue;
-	$precision = $truePos/$total;
-	$f1 = 2.0 * $precision * $recall /(0.0 + $precision + $recall);
+      $recall = $truePos/$allTrue;
+      $precision = $truePos/$total;
+
+      if ($precision + $recall > 0) {
+         $f1 = 2.0 * $precision * $recall /(0.0 + $precision + $recall);
+      } else {
+         $f1 = 0.0;
+      }
     } else {
-	print STDERR "No facts found for threshold $thresh!\n";
+      print STDERR "No facts found for threshold $thresh!\n";
     }
     
 
@@ -133,20 +138,20 @@ sub calcAUC {
     my $prevRecall = 0;
 
     foreach my $fact (sort {$inferHash->{$b} <=> $inferHash->{$a}} keys %$inferHash ){
-	if($trueHash->{$fact}>0)  {
-	    $truePos++;
-	} elsif (defined($trueHash->{$fact})){
-	    $falsePos++;
-	}
-	my $total = $truePos + $falsePos;
-	if($total > 0){
-	    my $recall = $truePos/$allTrue;
-	    my $precision = $truePos/$total;
+    if($trueHash->{$fact}>0)  {
+        $truePos++;
+    } elsif (defined($trueHash->{$fact})){
+        $falsePos++;
+    }
+    my $total = $truePos + $falsePos;
+    if($total > 0){
+        my $recall = $truePos/$allTrue;
+        my $precision = $truePos/$total;
 
-	    $auc += ($recall - $prevRecall) * (($precision + $prevPrec)/2.0);
-	    $prevPrec = $precision;
-	    $prevRecall = $recall;
-	}
+        $auc += ($recall - $prevRecall) * (($precision + $prevPrec)/2.0);
+        $prevPrec = $precision;
+        $prevRecall = $recall;
+    }
     }
     $auc += (1 - $prevRecall) * (($precision + 0 )/2.0);
     return $auc;
