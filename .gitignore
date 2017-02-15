@@ -1,0 +1,13 @@
+*.swp
+.DS_Store
+
+output
+out
+target
+classpath.out
+/*.txt
+/*.err
+
+newData
+
+*.h2.db
